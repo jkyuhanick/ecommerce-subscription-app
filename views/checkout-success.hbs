@@ -1,0 +1,44 @@
+<h2>Order Confirmation</h2>
+
+<p>Thank you for your purchase, {{user.firstName}}!</p> <br/>
+
+<h3>Shipping Address</h3>
+<p>{{user.address.street}}</p>
+<p>{{user.address.city}}, {{user.address.state}} {{user.address.postalCode}}</p>
+<br/>
+<h3>Order Details</h3>
+<ul>
+    {{#each order.items}}
+        <li>
+            <strong>{{this.productId.name}}</strong> - 
+            {{#if this.productId.subscription}}
+            {{else}}
+                {{#if this.variationId}}
+                    {{#each this.productId.variations}}
+                        {{#if (stringEq this._id ../this.variationId)}}
+                            {{this.shade}} -
+                        {{/if}}
+                    {{/each}}
+                    {{else}}
+                    {{this.productId.price}}
+                {{/if}}
+            {{/if}}
+            ${{#if this.variationId}}{{#each this.productId.variations}}{{#if (stringEq this._id ../this.variationId)}}{{this.price}}
+                    {{/if}}
+                {{/each}}
+                {{else}}
+                {{this.productId.price}}
+            {{/if}} x {{this.quantity}}
+        </li>
+    {{/each}}
+</ul>
+
+<p><strong>Total:</strong> ${{twoDec order.total}}</p>
+
+<p>Your order is being processed and will be shipped soon!</p>
+<br/>
+<div class="button-container">
+    <a href="/">
+        <button type="button">Back to Home</button>
+    </a>
+</div>

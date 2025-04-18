@@ -1,0 +1,196 @@
+<div id="all-orders-page">
+    <h2>All Your Orders</h2>
+
+    <form id="year-filter-form">
+        <label for="year">Filter by year:</label>
+       <select id="year" name="year" onchange="document.getElementById('year-filter-form').submit()">
+            <option value="">All</option>
+            {{#each years}}
+                <option value="{{this}}" {{#if (eq ../selectedYear this)}}selected{{/if}}>{{this}}</option>
+            {{/each}}
+        </select>
+    </form>
+
+    <div class="orders-container">
+        {{#each orders}}
+        <div class="order-card">
+            <p><strong>Order Number:</strong> {{this._id}}</p>
+            <p><strong>Date:</strong> {{formatDate this.createdAt}}</p>
+            <p><strong>Status:</strong> {{this.status}}</p>
+            <p><strong>Total:</strong> ${{twoDec this.total}}</p> <br/>
+            <p><strong>Shipping To:</strong><br/>
+               {{this.shippingAddress.fullName}} <br/>
+               {{this.shippingAddress.address}} <br/>
+               {{this.shippingAddress.city}}, {{this.shippingAddress.state}} {{this.shippingAddress.zip}} <br/>
+            </p>
+            <br/>
+            <h4>Items:</h4>
+            <ul>
+                {{#each this.items}}
+                <li>
+                    {{this.name}} {{#if this.productId.subscription}} 
+                                                    {{else}}
+                                                        {{#if this.variationId}}
+                                                            {{#each this.productId.variations}}
+                                                                {{#if (stringEq this._id ../this.variationId)}}
+                                                                - {{this.shade}} -
+                                                                {{/if}}
+                                                            {{/each}}
+                                                        {{/if}}
+                                                    {{/if}} {{this.quantity}} x ${{twoDec this.price}} <br>
+                </li>
+                {{/each}}
+            </ul>
+            <div class="image-scroll-wrapper">
+                            {{#each this.items}}
+                                {{#if this.variationId}}
+                                    {{#each this.productId.variations}}
+                                        {{#if (stringEq this._id ../this.variationId)}}
+                                            <div class="image-container">
+                                                <img src="{{this.images.[0]}}" alt="{{this.name}}" class="product-image">
+                                            </div>
+                                        {{/if}}
+                                    {{/each}}
+                                {{/if}}
+                            {{/each}}
+                        </div>
+        </div>
+        {{/each}}
+
+        {{#unless orders.length}}
+        <p>No orders found for this time period.</p>
+        {{/unless}}
+    </div>
+</div>
+
+
+<style> 
+    #all-orders-page {
+    padding: 30px;
+}
+
+#year-filter-form {
+    margin-bottom: 20px;
+}
+
+#year-filter-form select {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+#profile-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto;
+        grid-template-areas:
+            "account subscriptions"
+            "quiz quiz"
+            "orders orders";
+        gap: 20px;
+        padding: 20px;
+    } #orders-container {
+        grid-area: orders;
+    } #account-info,
+    #subscriptions-preview,
+    #quiz-results,
+    #orders-preview {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    } .orders-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.image-scroll-wrapper {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 10px;
+    padding: 10px 0;
+}
+
+.image-container {
+    flex: 0 0 auto; /* Prevent images from shrinking */
+}
+
+
+/* Style for the images */
+.product-image {
+    height: 80px;  /* Set the image size */
+    width: 80px;   /* Set the image size */
+    object-fit: cover;  /* Ensure the image fits well in the container */
+    border-radius: 8px;  
+}
+
+.preview-image::-webkit-scrollbar {
+    height: 8px;
+}
+
+.preview-image::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 4px;
+}
+
+.preview-image::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+.order-card {
+    flex: 1 0 30%; /* Adjust width of the order card */
+    max-width: 30%;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.order-card .preview-image {
+    flex-direction: row !important; 
+}
+
+#year-filter-form {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#year-filter-form label {
+    font-size: 16px;
+}
+
+#year-filter-form select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+#year-filter-form select:hover {
+    border-color: #aaa;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+#year-filter-form select:focus {
+    outline: none;
+    border-color: #666;
+    box-shadow: 0 0 0 3px rgba(100, 100, 255, 0.2);
+}
+
+
+</style>

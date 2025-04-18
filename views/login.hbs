@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In</title>
+</head>
+<body>
+    <h1>Log In</h1>
+
+    <!-- Display success or error message -->
+    {{#if message}}
+        <p style="color: {{#if success}}green{{else}}red{{/if}};">{{message}} <br><br></p>
+    {{/if}}
+
+    <form method="POST" action="/login">
+        <div class="form-group">
+            <input type="email" id="email" name="email" placeholder=" " value="{{email}}"required>
+            <label for="email">Email</label>
+        </div>
+        <div class="form-group">
+            <input type="password" id="password" name="password" placeholder=" " required>
+            <label for="password">Password</label>
+        </div>
+        <br>
+        <button type="submit">Login</button>
+    </form>
+    <br><br>
+    <p>Don't have an account? <a href="/signup" style="color: black; text-decoration:underline;">Sign Up</a></p>
+</body>
+</html>
+<script>
+    $(document).ready(function () {
+        $('#login-form').submit(function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            $.ajax({
+                url: '/login',
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function (data) {
+                    if (data.redirect) {
+                        window.location.href = data.redirect; // Redirect to stored page
+                    } else {
+                        window.location.href = '/'; // Default fallback
+                    }
+                },
+                error: function (err) {
+                    console.error('Login failed:', err);
+                    alert('Invalid email or password.');
+                }
+            });
+        });
+    });
+</script>
+

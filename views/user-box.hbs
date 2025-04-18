@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Next Box</title>
+    <style>
+        body {
+            font-family: Optima, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: left;
+        }
+
+        h1 {
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        /* Grid layout */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .product-card {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card h3 {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        .product-card .price {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        h4 {
+            color: gray;
+            font-weight: 100;
+        }
+
+        /* Final selection */
+        .selection-container {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .select-btn {
+            padding: 12px 20px;
+            cursor: pointer;
+            margin-top: auto;
+        }
+
+        .select-btn:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+{{#if subscriptions.length}}
+    {{#if quizResults}}
+        <h1>My Next Box</h1>
+
+        <div class="product-grid">
+            {{#each userBox.selectedProducts}}
+                <div class="product-card">
+                    {{#if this.selectedVariation}}
+                    <img src="{{this.selectedVariation.images.[0]}}" alt="{{this.selectedVariation.shade}}" class="product-image">
+                    <h4>{{this.product.brand}}</h4>
+                    <h3>{{this.product.name}} - {{this.selectedVariation.shade}}</h3>
+                    {{else}}
+                    <img src="{{this.product.images.[0]}}" alt="{{this.product.name}}" class="product-image">
+                    <h4>{{this.product.brand}}</h4>
+                    <h3>{{this.product.name}}</h3>
+                    {{/if}}
+                </div>
+                {{/each}}
+        </div>
+
+        <h2>Select your final product:</h2>
+
+        <div class="product-grid">
+            {{#each userBox.finalChoiceOptions}}
+            <div class="product-card">
+                {{#if this.selectedVariation}}
+                    <img src="{{this.selectedVariation.images.[0]}}" alt="{{this.selectedVariation.shade}}" class="product-image">
+                    <h4>{{this.product.brand}}</h4>
+                    <h3>{{this.product.name}} - {{this.selectedVariation.shade}}</h3>
+                {{else}}
+                    <img src="{{this.images.[0]}}" alt="{{this.name}}" class="product-image">
+                    <h4>{{this.brand}}</h4>
+                    <h3>{{this.name}}</h3>
+                {{/if}}
+                <button class="select-btn" data-product-id="{{this.product._id}}">Select This Product</button>
+            </div>
+            {{/each}}
+        </div>
+
+        <div class="selection-container">
+            <p>You may update your selection through the 15th of the month. After that, your final product will be chosen for you.</p>
+            <br/>
+            <p><strong>Selected Product:</strong> 
+                <span id="selectedProductName">
+                    {{#if userBox.finalChoice}}
+                        {{userBox.finalChoice.product.name}} - {{userBox.finalChoice.selectedVariation.shade}}  
+                    {{else}}
+                        None
+                    {{/if}}
+                </span>
+            </p>
+            <br/>
+            <button id="finalChoiceBtn" disabled>Confirm Final Choice</button>
+        </div>
+
+    {{else}}
+        <p>{{message}}</p> 
+        <br/>
+        <a href="/profile">
+            <button type="button">Take Beauty Quiz Now</button>
+        </a>
+    {{/if}}
+{{else}}
+    <p>{{message}}</p> <br/>
+    <a href="/subscription">
+            <button type="button">Subscribe Now</button>
+        </a>
+{{/if}}
+
+
+    <script>
+        let selectedProductId = null;
+        const selectButtons = document.querySelectorAll('.select-btn');
+        const finalChoiceBtn = document.getElementById('finalChoiceBtn');
+        const selectedProductName = document.getElementById('selectedProductName');
+
+        selectButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                if (selectedProductId !== this.dataset.productId) {
+                    // Reset all other buttons to "Select This Product"
+                    selectButtons.forEach(btn => {
+                        if (btn !== this) {
+                            btn.textContent = "Select This Product";
+                        }
+                    });
+
+                    // Update the current button to say "Selected"
+                    this.textContent = "Selected";
+                    selectedProductId = this.dataset.productId;
+                    selectedProductName.textContent = this.parentElement.querySelector('h3').textContent;
+                    finalChoiceBtn.disabled = false;
+                }
+            });
+        });
+
+        finalChoiceBtn.addEventListener('click', async function () {
+            if (!selectedProductId) return;
+
+            const response = await fetch(`/user-box/final-choice/${selectedProductId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: "{{userBox.userId}}", productId: selectedProductId })
+            });
+
+            if (response.ok) {
+                alert('Final choice confirmed!');
+                location.reload();
+            } else {
+                alert('Error confirming choice.');
+            }
+        });
+    </script>
+</body>
+</html>

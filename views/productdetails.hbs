@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <style>
+        /* Basic reset */
+        body {
+            font-family: Optima, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: left;
+        }
+
+        h4 {
+            color: gray;
+            font-weight: 100;
+        }
+
+        /* Product detail container */
+        .product-detail {
+            display: flex;
+            gap: 20px; /* Space between the image and text */
+            align-items: flex-start; /* Align image and text at the top */
+            padding: 20px;
+        }
+
+        /* Image container */
+        .image-gallery {
+            flex: 1; /* Take up 1 portion of the space */
+            text-align: left;
+        }
+
+        /* Main image styling */
+        .product-image {
+            width: 100%;               /* Make image fill the container */
+            height: 300px;             /* Fixed height for consistent image size */
+            object-fit: cover;         /* Ensures the image covers the area while preserving aspect ratio */
+            border-radius: 10px;       /* Rounded corners */
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow for effect */
+        }
+
+        /* Thumbnail container */
+        .thumbnail-container {
+            margin-top: 10px;
+            display: flex;
+            justify-content: left;
+            gap: 10px;
+        }
+
+        /* Thumbnail image styling */
+        .thumbnail {
+            width: 100px;               /* Fixed width for thumbnails */
+            height: 100px;              /* Fixed height for thumbnails */
+            object-fit: cover;         /* Ensures thumbnails are cropped and fit in the box */
+            cursor: pointer;
+            border-radius: 5px;
+            transition: transform 0.2s;
+        }
+
+        /* Thumbnail hover effect */
+        .thumbnail:hover {
+            transform: scale(1.1);
+        }
+
+        /* Text content (name, description, price) */
+        .product-info {
+            flex: 2;
+            margin-left: 80px;
+            margin-right: auto;
+        }
+
+        /* Price styling */
+        .price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .variation-selection {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); 
+        }
+
+        .variation-btn {
+            border-radius: 5px;
+            border: none;
+            background-color: hwb(0 84% 16%);
+            margin: 3.5px;
+        }
+
+        .variation-btn:hover {
+            background-color: hwb(0 78% 22%);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+            transition: background-color .2s;
+        }
+
+        h3 {
+            font-weight: 100;
+        }
+
+        /* Back button styling */
+        .btn {
+            font-family: Optima, sans-serif;
+            padding: 10px 15px;
+            border: 1px solid black;
+            border-color:#000000;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            color: #000000;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background-color: hwb(0 84% 16%);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+            transition: background-color .2s;
+            color: black;
+        }
+
+    /* Out-of-stock button style */
+    .out-of-stock {
+        background-color: #ccc;
+        color: #777;
+        cursor: not-allowed; /* Disable button interaction */
+    }
+
+    /* No hover effect for out-of-stock buttons */
+    .out-of-stock:hover {
+        background-color: #ccc;
+    }
+
+        @media (max-width: 768px) {
+        .product-detail {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .product-info {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .image-gallery {
+            text-align: center;
+        }
+    }
+
+    </style>
+</head>
+<body>
+    <div class="product-detail">
+        <!-- IF MUTLIPLE VARIATIONS -->
+        {{#if (multVar product)}}
+            <div class="image-gallery">
+                <!-- Main Image -->
+                <img id="mainImage" src="{{product.variations.[0].images.[0]}}" alt="{{product.name}}" class="product-image">
+
+                <!-- Thumbnails for the currently selected variation -->
+                <div class="thumbnail-container">
+                    {{#each product.variations.[0].images}}
+                        <img class="thumbnail" src="{{this}}" alt="Thumbnail" onclick="updateMainImage('{{this}}')">
+                    {{/each}}
+                </div>
+            </div>
+
+            <div class="product-info">
+                <h4 id="brand">{{product.brand}}</h4>
+                <h2 id="productName">{{product.name}}</h2>
+                <p class="price" id="price">${{product.variations.[0].price}}</p>
+
+                {{#if (outOfStock product)}}
+                    <h4>Out of Stock</h4>
+                {{/if}}
+
+                <br/><br/>
+                <p id="description">{{product.description}}</p>
+                <br/><br/>
+
+                <!-- Variation Selection Buttons -->
+                <h4 id="shades">Shades:</h4>
+                <div class="variation-selection">
+                    {{#each product.variations}}
+                        <button class="variation-btn" onclick="switchVariation({{ @index }})">
+                            {{this.shade}}
+                        </button>
+                    {{/each}}
+                </div>
+                <br/>
+                {{#if (eq product.category "Subscription")}}
+                    {{#if (outOfStock product)}}
+                        <button id="subscribeButtonNo" class="button out-of-stock" onclick="">Subscribe</button>
+                    {{else}}
+                        <button id="subscribeButton" onclick="handleSubscription('{{product._id}}')">Subscribe</button>
+                    {{/if}}
+                {{else}}
+                    {{#if (outOfStock product)}}
+                        <button id="cartButtonNo" onclick="">Add to Cart</button>
+                    {{else}}
+                        <button onclick="addToCart('{{product._id}}', event)">Add to Cart</button>
+                    {{/if}}
+                {{/if}}
+
+                <br/><br/>
+
+                
+            </div>
+
+            <br><br>
+            <a href="/products" class="btn">Back to Products</a>
+
+        </div>
+        {{else}}
+        <!-- DEFAULT VERSION -->
+        <div class="image-gallery">
+            <img id="mainImage" src="{{product.variations.[0].images.[0]}}" alt="{{product.name}}" class="product-image">
+
+            {{#if product.variations.[0].images.length}}
+            <div class="thumbnail-container">
+                {{#each product.variations.[0].images}}
+                    <img class="thumbnail" src="{{this}}" alt="Thumbnail" onclick="updateMainImage('{{this}}')">
+                {{/each}}
+            </div>
+            {{/if}}
+        </div>
+
+            <div class="product-info">
+                <h4>{{product.brand}}</h4>
+                <h2>{{product.name}}</h2>
+                <p class="price">${{product.variations.[0].price}}</p>
+                {{#if (outOfStock product)}}
+                    <h4>Out of Stock</h4>
+                {{/if}}
+                <br/> <br/>
+                <p>{{product.description}}</p>
+                <br/><br/>                
+                    {{#if (eq product.category "Subscription")}}
+                        {{#if (outOfStock product)}}
+                            <button id="subscribeButtonNo" class="button out-of-stock" onclick="">Subscribe</button>
+                        {{else}}
+                            <button id="subscribeButton" onclick="handleSubscription('{{product._id}}')">Subscribe</button>
+                        {{/if}}
+                    {{else}}
+                        {{#if (outOfStock product)}}
+                            <button id="cartButtonNo" onclick="">Add to Cart</button>
+                        {{else}}
+                            <button onclick="addToCart('{{product._id}}', event)">Add to Cart</button>
+                        {{/if}}
+                    {{/if}}
+
+                    
+            </div>
+            <a href="/products" class="btn">Back to Products</a>
+        {{/if}}
+        
+    </div>
+
+        
+
+    <script>
+
+        function updateMainImage(imageSrc) {
+            document.getElementById('mainImage').src = imageSrc;
+        } 
+
+        let productData = {{{ json product }}}; // Pass the product object as a JSON string
+
+        function updateMainImage(imageSrc) {
+            document.getElementById('mainImage').src = imageSrc;
+        }
+
+        let selectedProductId = productData._id; // Store main product ID
+// Get the `variationId` from the URL query parameters
+const urlParams = new URLSearchParams(window.location.search);
+const variationIdFromURL = urlParams.get('variationId'); // Get the variationId
+
+let selectedVariationId = variationIdFromURL || productData.variations[0]._id; // If no variationId, fall back to the first variation
+
+// Function to initialize the page and select the correct variation
+function initializeProductPage() {
+    if (variationIdFromURL) {
+        // If a variationId exists in the URL, find the corresponding variation and call switchVariation
+        const variationIndex = productData.variations.findIndex(variation => variation._id === variationIdFromURL);
+        if (variationIndex !== -1) {
+            switchVariation(variationIndex); // Call switchVariation with the correct index
+        }
+    }
+}
+
+// Call the initialization function when the page loads
+initializeProductPage();
+
+
+function switchVariation(index) {
+    let variation = productData.variations[index];
+    selectedVariationId = variation._id; // Update selected variation
+
+    // Update Main Image
+    document.getElementById('mainImage').src = variation.images[0];
+
+    // Update Thumbnails
+    let thumbnailContainer = document.querySelector('.thumbnail-container');
+    thumbnailContainer.innerHTML = '';
+    variation.images.forEach(image => {
+        let img = document.createElement('img');
+        img.src = image;
+        img.classList.add('thumbnail');
+        img.alt = 'Thumbnail';
+        img.onclick = function () { updateMainImage(image); };
+        thumbnailContainer.appendChild(img);
+    });
+
+    // Update Product Info
+    document.getElementById('price').innerText = `$${variation.price}`;
+
+    // Ensure Add to Cart Button still calls addToCart with the correct product ID
+    let cartButton = document.querySelector("button[onclick^='addToCart']");
+    if (cartButton) {
+        cartButton.setAttribute("onclick", `addToCart('${productData._id}', event)`);
+    }
+}
+
+async function addToCart(productId, event) {
+    if (event) event.preventDefault();
+
+    try {
+        const res = await fetch('/products/products-protected-route', { method: 'GET' });
+
+        if (res.redirected) {
+            console.log("User not authenticated, redirecting...");
+            window.location.href = `/login?redirect=${encodeURIComponent('/products/' + productId)}`;
+            return;
+        }
+
+        // Send variation ID in the request body, but keep the product ID in the URL
+        const addToCartResponse = await fetch(`/cart/add/${productId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantity: 1, variationId: selectedVariationId }) // Include variationId
+        });
+
+        if (addToCartResponse.ok) {
+            console.log("Item added to cart!");
+            window.location.href = `/products/${productId}`;
+        } else {
+            alert('Failed to add to cart. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        alert('Something went wrong.');
+    }
+}
+
+
+
+
+        async function handleSubscription(planId) {
+            console.log("Attempting to add subscription with ID:", planId); // Debugging log
+
+            try {
+                const res = await fetch('/protected-route', { method: 'GET' });
+
+                if (res.redirected) {
+                    console.log("User not authenticated, redirecting to login...");
+                    const redirectUrl = '/subscription';
+                    window.location.href = `/login?redirect=${encodeURIComponent(redirectUrl)}`;
+                } else {
+                    // Check if quiz is completed
+                    const response = await fetch('/quiz/status');
+                    const { hasCompletedQuiz } = await response.json();
+
+                    if (hasCompletedQuiz) {
+                        console.log("Quiz completed, adding subscription to cart...");
+
+                        // Add subscription to cart
+                        const addToCartResponse = await fetch(`/cart/add/${planId}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ quantity: 1 }),
+                        });
+
+                        if (addToCartResponse.ok) {
+                            console.log("Subscription successfully added to cart!");
+                            window.location.href = '/cart';
+                        } else {
+                            console.error('Failed to add subscription to cart.');
+                            alert('Failed to add subscription to cart. Please try again.');
+                        }
+                    } else {
+                        console.log("Quiz not completed, redirecting to quiz page...");
+                        window.location.href = `/quiz?redirectTo=subscriptions`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error handling subscription:', error);
+                alert('Something went wrong. Please try again.');
+            }
+        }
+
+    </script>
+
+</body>
+</html>

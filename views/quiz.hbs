@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beauty Quiz</title>
+
+    <!-- STYLE -->
+    <style>
+        body {
+            font-family: Optima, sans-serif;
+            background-color: #f7f7f7;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        h3 {
+            text-align: left;
+            font-size: 1.2em;
+        }
+
+        .quiz-container {
+            width: 80%;
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-text {
+            text-align: left;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Create a grid with flexible columns */
+            gap: 15px; /* Space between buttons */
+            justify-items: center; /* Center buttons horizontally */
+        }
+
+        .option-btn {
+            display: flex; /* Flex to center the content inside the button */
+            align-items: center; /* Vertically center the text */
+            justify-content: center; /* Horizontally center the text */
+            padding: 15px;
+            font-size: 1em;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 2px solid #ddd;
+            border-radius: 0px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            width: 200px; /* Make button take up full width of grid cell */
+            height: 100px; /* Set a fixed height for all buttons */
+            min-height: 100px; /* Ensure buttons have a minimum height */
+            box-sizing: border-box; /* Include padding and border in the button's total size */
+        }
+
+        /* Option button hover and active states */
+        .option-btn:hover {
+            background-color: #bc8b9f;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .option-btn:active {
+            background-color: #bc8b9f;
+        }
+
+        /* When selected, the option button will have a highlighted style */
+        .option-btn.selected {
+            background-color: #bc8b9f;
+            color: white;
+            border-color: #936d7c;
+        }
+
+        .next-btn {
+            margin-left: auto;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .button-group button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #bc8b9f;
+            color: white;
+            border: none;
+            border-radius: 0px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-group button:hover {
+            background-color: #936d7c;
+        }
+    </style>
+
+</head>
+<body>
+    <h1>Beauty Quiz</h1>
+    
+    <!-- Quiz container -->
+    <div class="quiz-container">
+        <!-- Display the question -->
+        <h2>Question {{currentQuestionIndex}} of {{totalQuestions}}</h2>
+        <h3 class="question-text">{{currentQuestion.text}}</h3>
+
+        <!-- Options -->
+        <form method="POST" action="/quiz/next">
+            <div class="options">
+                <!-- Radio Buttons -->
+                {{#if (not currentQuestion.allowMultiple)}}
+                    {{#each currentQuestion.options}}
+                            <label>
+                                <input type="radio" name="answer" value="{{this}}" style="display:none;" 
+                                    {{#if (arrayContains ../currentAnswer this)}}checked{{/if}}>
+                                <button type="button" class="option-btn {{#if (arrayContains ../currentAnswer this)}}selected{{/if}}">{{this}}</button>
+                            </label>
+                        {{/each}}
+                    {{else}}
+                <!-- Checkbox Buttons -->
+                    {{#each currentQuestion.options}}
+                        <label>
+                            <input type="checkbox" name="answer" value="{{this}}" style="display:none;" 
+                                {{#if (arrayContains ../currentAnswer this)}}checked{{/if}}>
+                            <button type="button" class="option-btn {{#if (arrayContains ../currentAnswer this)}}selected{{/if}}">{{this}}</button>
+                        </label>
+                    {{/each}}
+                {{/if}}
+            </div>
+
+            <input type="hidden" name="questionIndex" value="{{currentQuestionIndex}}">
+
+            <!-- Navigation Buttons -->
+            <div class="button-group">
+                {{#if isFirstQuestion}}
+                    <button type="submit" class="next-btn">Next</button>
+                {{else}}
+                    {{#if isLastQuestion}}
+                        <button type="submit" formaction="/quiz/previous">Previous</button>
+                        <button type="submit">Save</button>
+                    {{else}}
+                        <button type="submit" formaction="/quiz/previous">Previous</button>
+                        <button type="submit">Next</button>
+                    {{/if}}
+                {{/if}}
+            </div>
+        </form>
+    </div>
+
+    <script>
+
+        // Save the scroll position before the user clicks Next
+        window.addEventListener('beforeunload', function () {
+            localStorage.setItem('scrollPosition', window.scrollY);
+        });
+
+        // Restore the scroll position when the page loads
+        window.addEventListener('load', function () {
+            const scrollPosition = localStorage.getItem('scrollPosition');
+            if (scrollPosition) {
+                window.scrollTo(0, parseInt(scrollPosition, 10));  // Restore the saved scroll position
+                localStorage.removeItem('scrollPosition');  // Clear it once it's used
+            }
+        });
+        
+        // event listeners to check/uncheck radio/checkbox
+        document.querySelectorAll('.option-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const input = button.previousElementSibling;
+                const isRadio = input.type === 'radio';
+                const isChecked = input.checked;
+
+                // For radio buttons: ensure only one is selected at a time
+                if (isRadio) {
+                    // Unselect other radio buttons
+                    const allRadioButtons = document.querySelectorAll(`input[name="${input.name}"]`);
+                    allRadioButtons.forEach(radio => {
+                        const radioBtn = radio.nextElementSibling;
+                        radio.checked = false;
+                        radioBtn.classList.remove('selected');
+                    });
+
+                    // Select the clicked radio button
+                    input.checked = !isChecked;
+                    if (input.checked) {
+                        button.classList.add('selected');
+                    } else {
+                        button.classList.remove('selected');
+                    }
+                }
+
+                // For checkboxes: toggle selection
+                if (!isRadio) {
+                    input.checked = !isChecked;
+                    if (input.checked) {
+                        button.classList.add('selected');
+                    } else {
+                        button.classList.remove('selected');
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Grid container for the cart layout */
+        .cart-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr; /* Four equal columns */
+            gap: 10px; /* Space between the columns */
+            margin-bottom: 20px; /* Space between cart items */
+        }
+
+        /* First column: Product details, remove button, and quantity controls */
+        .cart-item-details {
+            display: flex;
+            flex-direction: column; /* Stack the content vertically */
+            gap: 5px; /* Space between each element */
+        }
+
+        /* Second column: Product image */
+        .preview-image {
+            display: flex;
+            justify-content: right; /* Center the image horizontally */
+            align-items: center; /* Center the image vertically */
+        }
+
+        .preview-image img {
+            width: 90%;         
+            height: 250px;           
+            object-fit: cover;         
+            border-radius: 8px;       
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
+        }
+
+        /* Quantity controls */
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-controls button {
+            padding: 5px 10px;
+            border: none;
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .quantity-controls button:hover {
+            background-color: #c4c3c3;
+        }
+
+        /* Remove button */
+        .remove-button {
+            margin-top: 5px;
+            padding: 5px 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .remove-button:hover {
+            background-color: #c4c3c3;
+        }
+
+        /* Horizontal rule (centered) */
+        #cart-hr {
+            border: 0;
+            height: 1px;
+            background-color: grey;
+            width: 50%;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            align-self: center; 
+            opacity: 50%;
+        }
+
+        /* Cart total section positioned below cart items */
+        .cart-total {
+            display: flex;
+            flex-direction: column; /* Stack total and button vertically */
+            align-items: flex-end; /* Align items to the right */
+            margin-top: 20px; /* Space between cart items and total */
+            padding: 10px;
+            gap: 10px;
+        }
+
+        .cart-total p {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .checkout-button {
+            margin-top: 10px;
+            padding: 10px 20px; /* Button padding */
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .product-link {
+            text-decoration: none;
+            color: black;
+        }
+
+        .product-link:hover {
+            color: black;
+        }
+
+        h6 {
+            font-weight: 100;
+            color: rgb(74, 74, 74);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="cart-container">
+        <h1>Your Cart</h1>
+
+        {{#if cart}} 
+            {{#if cart.items.length}}
+                <ul>
+                    {{#each cart.items}}
+                        <li>
+                            <div class="cart-item">
+                                <div class="cart-item-details">
+                                    <h3>
+                                        <a class="product-link" href="/products/{{this.productId._id}}?variationId={{this.variationId}}">
+                                            {{this.productId.name}}
+                                        </a>
+                                    </h3>                                    
+                                    {{#if this.productId.subscription}}
+                                        <p></p>
+                                    {{else}}
+                                        <p>Shade: {{#if this.variationId}}
+                                            {{#each this.productId.variations}}
+                                                {{#if (stringEq this._id ../this.variationId)}}
+                                                    {{this.shade}}
+                                                {{/if}}
+                                            {{/each}}
+                                            {{else}}
+                                            {{this.productId.price}}
+                                        {{/if}}</p>
+                                    {{/if}}
+                                    <p>Price: ${{#if this.variationId}}{{#each this.productId.variations}}{{#if (stringEq this._id ../this.variationId)}}{{this.price}}{{/if}}{{/each}}{{else}}{{this.productId.price}}{{/if}}</p>
+                                    <p>{{this.productId.description}}</p>
+                                    <div class="quantity-controls">
+                                        <button class="quantity-minus" data-product-id="{{this.productId._id}}" data-variation-id="{{this.variationId}}">-</button>
+                                        <span class="quantity-display" data-product-id="{{this.productId._id}}" data-variation-id="{{this.variationId}}">{{this.quantity}}</span>
+                                        <button class="quantity-plus" data-product-id="{{this.productId._id}}" data-variation-id="{{this.variationId}}">+</button>
+                                    </div>
+
+                                    <form action="/cart/remove/{{this.productId._id}}" method="POST">
+                                        <!-- Pass the variationId as part of the form data -->
+                                        <input type="hidden" name="variationId" value="{{this.variationId}}">
+                                        <button type="submit" class="remove-button"><i class="fa-regular fa-trash-can"></i> Remove</button>
+                                    </form>
+
+                                </div>
+
+                                <div class="preview-image">
+                                    {{#if this.variationId}}
+                                        {{#each this.productId.variations}}
+                                            {{#if (stringEq this._id ../this.variationId)}}
+                                                <img src="{{this.images.[0]}}" alt="{{this.name}}" class="product-image">
+                                            {{/if}}
+                                        {{/each}}
+                                    {{else}}
+                                        {{this.productId.price}}
+                                    {{/if}}
+                                </div>
+                            </div>
+                            <hr id="cart-hr"> 
+                        </li>
+                    {{/each}}
+                </ul>
+                   <!-- Promo Code Form -->
+                    <br/>
+                    <h3>Enter a promo code:</h3> <br/>
+                    <form id="promo-code-form" method="POST">
+                        <div class="form-group">
+                            <input type="text" id="promo-code" name="promoCode" placeholder=" " required>
+                            <label for="promo-code">Promo Code</label>
+                        </div>
+                        <button type="submit">Apply Promo Code</button>
+                        {{#if cart.promoCode}}
+                        <div class="promo-code-display">
+                            <br/>
+                            <p>{{cart.promoCode.code}} <button type="button" id="remove-promo-code" class="remove-promo-button">X</button></p>
+                        </div>
+                        <br/>
+                        {{/if}}
+                    </form>
+                    <!-- Display success or error message -->
+                    <div id="promo-message">
+                        {{#if message}}
+                            <p style="color: {{#if success}}green{{else}}red{{/if}};">{{message}} <br><br></p>
+                        {{/if}}
+                    </div>
+                    <div class="cart-total">
+                        <h6>Free Standard Shipping</h6>
+                        <p>Total: $<span id="cart-total">{{total}}</span></p>
+                        <form action="/checkout" method="GET">
+                            <input type="hidden" name="total" value="{{total}}">
+                            <button type="submit" class="checkout-button">Proceed to Checkout</button>
+                        </form>
+                    </div>
+            {{else}}
+                <p>Your cart is empty. <br><br></p>
+                <div class="button-container">
+                    <a href="/subscription">
+                        <button type="button">Get Started</button>
+                    </a>
+                    <a href="/products">
+                        <button type="button">Shop Now</button>
+                    </a>
+                </div>
+            {{/if}}
+        {{else}}
+            <p>Your cart is empty. <br><br></p>
+            <div class="button-container">
+                <a href="/subscription">
+                    <button type="button">Get Started</button>
+                </a>
+                <a href="/products">
+                    <button type="button">Shop Now</button>
+                </a>
+            </div>
+        {{/if}}
+    </div>
+    
+    <script>
+$(document).ready(function () {
+    // Handle promo code form submission with AJAX
+    $('#promo-code-form').submit(function (event) {
+        event.preventDefault(); // Prevent form from reloading the page
+
+        const promoCode = $('#promo-code').val(); // Get the promo code input value
+
+        // Send AJAX request to apply the promo code
+        $.ajax({
+            url: '/cart/apply-promo', 
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ promoCode }), // Send the promo code to the server
+            success: function (data) {
+                console.log(data);  // Debugging the server response to see what is being sent back
+
+                if (data.success) {
+                    // Update the cart and total dynamically based on server response
+                    $('#cart-total').text(data.total.toFixed(2));
+
+                    // Remove the old promo code display before adding the new one
+                    $('.promo-code-display').remove();
+
+                    // Update the promo code display if it was successfully applied
+                    if (data.promoCode && data.promoCode.code) {
+                        const promoCodeDisplay = `
+                            <div class="promo-code-display">
+                            <br/>
+                                <p>${data.promoCode.code} <button type="button" id="remove-promo-code" class="remove-promo-button">X</button></p>
+                            </div>`;
+                        $('#promo-code-form').after(promoCodeDisplay);
+                    }
+
+                    // Clear the promo code input field
+                    $('#promo-code').val('');
+                    $('#promo-message').text(data.message).css('color', 'green');
+                } else {
+                    // Handle the error and show the message
+                    $('#promo-message').text(data.message).css('color', 'red');
+                }
+            },
+            error: function (err) {
+                const errorMsg = err.responseJSON?.message || 'An error occurred while applying the promo code.';
+                $('#promo-message').text(errorMsg).css('color', 'red');
+            }
+        });
+    });
+
+    // Handle promo code removal dynamically
+    $(document).on('click', '#remove-promo-code', function () {
+        $.ajax({
+            url: '/cart/remove-promo', 
+            method: 'POST',
+            contentType: 'application/json',
+            success: function (data) {
+                console.log(data);  // Debugging the server response to see what is being sent back
+
+                if (data.success) {
+                    // Update the cart and total dynamically based on server response
+                    $('#cart-total').text(data.total.toFixed(2));
+
+                    // Remove the displayed promo code
+                    $('.promo-code-display').remove();
+
+                    // Optionally, display a success message
+                    $('#promo-message').text(data.message).css('color', 'green');
+                } else {
+                    // Handle the error and show the message
+                    $('#promo-message').text(data.message).css('color', 'red');
+                }
+            },
+            error: function (err) {
+                const errorMsg = err.responseJSON?.message || 'An error occurred while applying the promo code.';
+                $('#promo-message').text(errorMsg).css('color', 'red');
+            }
+        });
+    });
+
+    // Your existing quantity update functions
+    function updateQuantity(productId, variationId, change) {
+        $.ajax({
+            url: `/cart/update/${productId},${variationId}`,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ change }),
+            success: function (data) {
+                console.log(data); // Debugging the server response for cart update
+                $(`.quantity-display[data-product-id="${productId}"][data-variation-id="${variationId}"]`).text(data.newQuantity);
+                $('#cart-total').text(data.newTotal.toFixed(2));
+                updateCartCount();
+            },
+            error: function (err) {
+                console.error('Error updating quantity:', err);
+            }
+        });
+    }
+
+    $('.quantity-minus').click(function () {
+        const productId = $(this).data('product-id');
+        const variationId = $(this).data('variation-id');
+        updateQuantity(productId, variationId, -1);
+    });
+
+    $('.quantity-plus').click(function () {
+        const productId = $(this).data('product-id');
+        const variationId = $(this).data('variation-id');
+        updateQuantity(productId, variationId, 1);
+    });
+
+    // Fetch cart count (same as before)
+    function updateCartCount() {
+        $.ajax({
+            url: `/cart/count?timestamp=${new Date().getTime()}`,
+            method: 'GET',
+            success: function (data) {
+                $('#cart-count').text(data.cartCount);
+            },
+            error: function (err) {
+                console.error('Error fetching cart count:', err);
+            }
+        });
+    }
+
+    updateCartCount(); // Run on page load
+});
+
+    </script>
+
+</body>
+</html>

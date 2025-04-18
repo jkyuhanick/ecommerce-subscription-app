@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Options</title>
+    <style>
+        body {
+            font-family: Optima, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 20px 0;
+        }
+
+        .subscription-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+
+        .subscription-box {
+            flex: 1;
+            max-width: 350px;
+            max-height: 800px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+            text-align: left;
+            flex-direction: column;
+            display: flex;
+        }
+
+        .subscription-box h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .subscription-box .price {
+            font-size: 20px;
+            color: #6f6f6f;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .subscription-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+
+        .subscription-box ul li {
+            margin-bottom: 5px;
+        }
+
+        .subscription-box button {
+            margin-top: auto;
+        }
+
+        .subscription-box button:hover {
+        }
+
+        .top-pick {
+            border: 2px solid #bc8b9f;
+            background-color: #f2e0e7;
+        }
+
+        @media (max-width: 768px) {
+            .subscription-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Choose your subscription</h1>
+    <div class="subscription-container">
+        {{#each products}}
+        <div class="subscription-box {{#if (eq name 'Rebillable 12-Month Membership')}}top-pick{{/if}}">
+            <h2>{{name}}</h2> <br/>
+            <h4 class="price">{{description}}</h4>
+            <ul>
+                <li>Receive 4-6 items every month</li>
+                <li>Trial, deluxe-sample, and full-size options</li>
+                <li>Free Shipping</li>
+            </ul>
+            <br/> <br/>
+            <button onclick="handleSubscription('{{_id}}')">Subscribe</button>
+        </div>
+        {{/each}}
+    </div>
+</body>
+</html>
+
+<script>
+    async function handleSubscription(planId) {
+        console.log("Attempting to add subscription with ID:", planId);
+
+        try {
+            const res = await fetch('/protected-route', { method: 'GET' });
+
+            if (res.redirected) {
+                console.log("User not authenticated, redirecting to login...");
+                const redirectUrl = '/subscription';
+                window.location.href = `/login?redirect=${encodeURIComponent(redirectUrl)}`;
+            } else {
+                const response = await fetch('/quiz/status');
+                const { hasCompletedQuiz } = await response.json();
+
+                if (hasCompletedQuiz) {
+                    console.log("Quiz completed, adding subscription to cart...");
+                    const addToCartResponse = await fetch(`/cart/add/${planId}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ quantity: 1 }),
+                    });
+
+                    if (addToCartResponse.ok) {
+                        console.log("Subscription successfully added to cart!");
+                        window.location.href = '/cart';
+                    } else {
+                        console.error('Failed to add subscription to cart.');
+                        alert('Failed to add subscription to cart. Please try again.');
+                    }
+                } else {
+                    console.log("Quiz not completed, redirecting to quiz page...");
+                    window.location.href = `/quiz?redirectTo=subscriptions`;
+                }
+            }
+        } catch (error) {
+            console.error('Error handling subscription:', error);
+            alert('Something went wrong. Please try again.');
+        }
+    }
+</script>

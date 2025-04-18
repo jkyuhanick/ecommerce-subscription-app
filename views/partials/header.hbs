@@ -1,0 +1,83 @@
+<div class="promo-header">
+    <h3>Use code SAVE20 to save 20% on your order + free shipping on all orders</h3>
+</div>
+<header>
+    <h1><a href="/">BeautyBox</a></h1>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/subscription">Subscription Box</a>
+        <a href="/products">Products</a>
+        <a href="/user-box">My Next Box</a>
+        <div class="icons"> 
+            <a href="/profile"><i class="fa-solid fa-user"></i></a>
+            <a href="/cart">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span id="cart-count" class="cart-badge">{{data.cartCount}}</span> <!-- Cart item count -->
+            </a>
+        </div>
+    </nav>
+</header>
+
+<style>
+    header {
+        color: white;
+    }
+
+    .promo-header {
+        background-color: black;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        font-weight: 50;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        text-align: center;
+    }
+
+    .icons {
+        float: right;
+    }
+    .icons i {
+        font-size: 20px;
+        margin-left: 15px; 
+    }
+    .cart-badge {
+        background-color: #bc8b9f;
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        border-radius: 50%;
+        padding: 2px 6px;
+        position: absolute;
+        top: -5px;
+        right: -5px;
+    }
+    .icons {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        // Fetch cart count
+        function updateCartCount() {
+            $.ajax({
+                url: '/cart/count', // Corrected API route
+                method: 'GET',
+                success: function (data) {
+                    console.log("Cart count from server:", data.cartCount); // Debugging log
+                    $('#cart-count').text(data.cartCount); // Update the cart badge
+                },
+                error: function (err) {
+                    console.error('Error fetching cart count:', err);
+                }
+            });
+        }
+
+        updateCartCount(); // Run on page load
+    });
+</script>
+
+

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+    <style>
+
+        #filter-dropdowns {
+            display: flex;
+            flex-direction: row;
+            margin: 0;
+        }
+
+        /* Add a grid layout for the product container */
+        .product-grid {
+            color: black;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 3 columns of equal width */
+            gap: 20px; /* space between items */
+            padding: 20px;
+        }
+
+        /* Style each product card */
+        .product-card {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-image {
+            width: 100%;         
+            height: 250px;           
+            object-fit: cover;         
+            border-radius: 8px;       
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
+        }
+
+
+        .product-card h3 {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        .product-card .price {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .product-card p {
+            margin-top: 5px;
+        }
+
+        h4 {
+            color: gray;
+            font-weight: 100;
+        }
+
+        #product-link {
+            color: black;
+        }
+
+        .filter-form {
+            margin: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            font-family: Optima, sans-serif;
+            color: black;
+        }
+
+        .filter-form label,
+        .filter-form legend {
+            font-weight: 500;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .filter-form select {
+            padding: 6px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .filter-form fieldset {
+            border: none;
+            margin: 10px 0;
+            padding: 0;
+        }
+
+        .filter-form input[type="checkbox"] {
+            margin-right: 6px;
+            accent-color: black; /* adds your site's tone */
+        }
+
+        .filter-form button {
+            margin-top: 0px;
+            background-color: white;
+            color: black;
+            border: 1px solid black;
+            border-radius: 6px;
+            padding: 8px 14px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 14px;
+        }
+
+        .filter-form button:hover {
+             background-color: hwb(0 84% 16%);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+            transition: background-color .2s;
+        }
+
+
+        .collapsible-section {
+            margin: 0px;
+        }
+
+        .collapsible-toggle {
+            background-color: transparent;
+            border: none;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 5px 0;
+            color: black;
+            font-family: Optima, sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .collapsible-toggle:hover {
+            text-decoration: underline;
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding-left: 10px;
+        }
+
+        .collapsible-content.open {
+            max-height: 500px; 
+        }
+
+        .reset-link {
+            margin-left: 10px;
+            text-decoration: none;
+            font-size: 14px;
+            color: black;
+            border: 1px solid black;
+            border-radius: 6px;
+            padding: 7px 12px;
+            transition: background-color 0.2s ease;
+        }
+
+        .collapsible-section {
+            margin: 6px;
+        }
+
+        .collapsible-toggle {
+            background-color: transparent;
+            border: none;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 5px 0;
+            color: black;
+            font-family: Optima, sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .collapsible-toggle:hover {
+            text-decoration: underline;
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding-left: 10px;
+        }
+
+        .collapsible-content.open {
+            max-height: 500px; 
+        }
+
+        .reset-link {
+            margin-left: 10px;
+            text-decoration: none;
+            font-size: 14px;
+            color: black;
+            border: 1px solid black;
+            border-radius: 6px;
+            padding: 7px 12px;
+            transition: background-color 0.2s ease;
+        }
+
+        .reset-link:hover {
+            background-color: hwb(0 84% 16%);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+            transition: background-color .2s;
+            color: black;
+        }
+
+        #sort {
+            margin: 10px;
+            height: 30px;
+        }
+
+        #sort-by {
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .subscription-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+<body>
+    <h1 class="text-center">Products</h1>
+
+    <form method="GET" action="/products" class="filter-form">
+    <div id="filter-dropdowns">
+       <label for="sort" id="sort-by">Sort By:</label>
+        <select name="sort" id="sort">
+            <option value="" {{#unless selectedSort}}selected{{/unless}}>Relevance</option>
+            <option value="low" {{#if (eq selectedSort "low")}}selected{{/if}}>Price: Low to High</option>
+            <option value="high" {{#if (eq selectedSort "high")}}selected{{/if}}>Price: High to Low</option>
+        </select>
+
+        <!-- Filter by Category -->
+        <div class="collapsible-section">
+            <button type="button" class="collapsible-toggle">Filter by Category ▾</button>
+            <div class="collapsible-content">
+                {{#each categories}}
+                    <label>
+                        <input type="checkbox" name="category" value="{{this}}"
+                        {{#if (arrayContains ../selectedCategories this)}}checked{{/if}}>
+                        {{this}}
+                    </label><br>
+                {{/each}}
+            </div>
+        </div>
+
+      <!-- Filter by Brand -->
+        <div class="collapsible-section">
+            <button type="button" class="collapsible-toggle">Filter by Brand ▾</button>
+            <div class="collapsible-content">
+                {{#each brands}}
+                    <label>
+                        <input type="checkbox" name="brand" value="{{this}}"
+                        {{#if (arrayContains ../selectedBrands this)}}checked{{/if}}>
+                        {{this}}
+                    </label><br>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+
+        <!-- Submit and Reset -->
+        <div style="margin-top: 10px;">
+            <button type="submit">Apply Filters</button>
+            <a href="/products" class="reset-link">Reset Filters</a>
+        </div>
+    </form>
+
+    <div class="product-grid">
+        {{#each products}}
+        <div class="product-card">
+            <a href="/products/{{this._id}}" id="product-link">
+                {{#if this.images.[0]}}
+                    <img src="{{this.images.[0]}}" alt="{{this.name}}" class="product-image">
+                {{else if this.variations.[0].images.[0]}}
+                    <img src="{{this.variations.[0].images.[0]}}" alt="{{this.name}}" class="product-image">
+                {{else}}
+                    <img src="/uploads/placeholder.png" alt="No Image Available" class="product-image">
+                {{/if}}
+            </a>            
+            <h4>{{this.brand}}</h4>
+            <h3> <a href="/products/{{this._id}}" id="product-link" class="btn">{{this.name}}</a></h3>
+            <p class="price">
+                {{#if this.price}}
+                    ${{this.price}}
+                {{else if this.variations.[0].price}}
+                    ${{this.variations.[0].price}}
+                {{else}}
+                    Price Unavailable
+                {{/if}}
+            </p>
+            <p>{{#if this.subscription}}{{this.description}}{{/if}}</p>
+        </div>
+        {{/each}}
+    </div>
+<script>
+    window.addEventListener('beforeunload', function () {
+        localStorage.setItem('scrollPosition', window.scrollY);
+    });
+
+    window.addEventListener('load', function () {
+        const scrollPosition = localStorage.getItem('scrollPosition');
+        if (scrollPosition) {
+            window.scrollTo(0, scrollPosition);
+            localStorage.removeItem('scrollPosition'); 
+        }
+    });
+
+    document.querySelectorAll('.collapsible-toggle').forEach(button => {
+        button.addEventListener('click', () => {
+            const content = button.nextElementSibling;
+            content.classList.toggle('open');
+            const isOpen = content.classList.contains('open');
+            button.innerHTML = button.innerHTML.replace(isOpen ? '▾' : '▴', isOpen ? '▴' : '▾');
+        });
+    });
+</script>
+
+</body>
+</html>

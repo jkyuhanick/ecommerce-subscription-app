@@ -1,0 +1,122 @@
+<footer>
+    <hr id="footer-hr"> <br/>
+    <div class="footer-container">
+        <div class="footer-column">
+            <h3>Products</h3>
+            <ul>
+                <li><a href="#">Members Market</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h3>Company</h3>
+            <ul>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Careers</a></li>
+                <li><a href="#">Help Center</a></li>
+                <li><a href="#">Legal</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h3>Policies</h3>
+            <ul>
+                <li><a href="#">Terms</a></li>
+                <li><a href="#">Privacy</a></li>
+                <li><a href="#">Accessibility</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h3>Stay in Touch</h3>
+            <p>For deals, news, and more!</p>
+            <form id="email-signup" class="email-signup" onsubmit="clearInput(); return false;">
+                <input type="email" id="email-input" placeholder="Enter your email" required>  
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+    <br/>
+    <p>&copy; 2025 BeautyBox Inc.</p>
+</footer>
+
+<style>
+    #footer-hr {
+        border: 0;
+        height: 1px; 
+        background-color: #808080; 
+        width: 100%; 
+        margin: 30px auto;
+        border-top: 1px solid #808080; 
+        opacity: 0.5; 
+    }
+
+
+    footer {
+        padding: 40px 20px;
+        text-align: center;
+    }
+
+    .footer-container {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .footer-column {
+        flex: 1;
+        margin: 0 15px;
+        min-width: 200px; /* Ensures the columns stay readable on smaller screens */
+    }
+
+    .footer-column h4 {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+
+    .footer-column ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .footer-column ul li {
+        margin-bottom: 10px;
+    }
+
+    .footer-column ul li a {
+        text-decoration: none;
+        color: #333;
+    }
+
+    .footer-column ul li a:hover {
+    }
+
+    .email-signup {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-left: 40px;
+    }
+
+    .email-signup input {
+        padding: 10px;
+        margin-bottom: 10px;
+        width: 200px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        margin-top: 11px;
+        margin-right: 10px;
+    }
+
+
+</style>
+
+
+<script>
+    function clearInput() {
+        document.getElementById("email-input").value = ""; 
+    }
+</script>

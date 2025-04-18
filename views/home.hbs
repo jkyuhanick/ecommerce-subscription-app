@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        html, body {
+            height: 100%; /* Full viewport height */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h4 {
+            font-weight: 150;
+        }
+        
+        .home-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Two equal-width columns */
+            grid-template-rows: 1fr 1fr; /* Two equal-height rows */
+            gap: 0px; /* Space between the grid items */
+            height: 100vh; /* Full height of the viewport */
+            padding: 0px;
+        }
+
+        .grid-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0px;
+        }
+
+        .item-1, .item-4 {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .item-1 h1, .item-4 h1 {
+            margin-bottom: 0px;
+        }
+
+        .item-1 p, .item-4 p {
+            margin-bottom: 0px;
+        }
+
+        .item-2, .item-3 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Set a fixed size for the images to ensure they're the same size */
+        .item-2 img, .item-3 img {
+            width: 100%; /* Makes the image fill the width of the container */
+            height: 400px; /* Fixed height */
+            object-fit: cover; /* Ensures the image covers the area while maintaining its aspect ratio */
+            margin: 0px;
+            border-radius: 8px;       
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+   {{#if user}}
+    <h4>Welcome, {{user.firstName}}!</h4>
+   {{/if}}
+    <div class="home-container">
+        <div class="grid-item item-1">
+            <h1>Beauty Picked for You</h1>
+            <p>Receive 5 products every month worth over $120, starting at just $22 per month.</p> <br/>
+            <a href="/subscription">
+                <button type="button">Get Started</button>
+            </a>
+        </div>
+        <div class="grid-item item-2">
+            <img src="/uploads/homepage1.avif" alt="Image 1">
+        </div>
+        <div class="grid-item item-3">
+            <img src="/uploads/homepage2.avif" alt="Image 2">
+        </div>
+        <div class="grid-item item-4">
+            <h1>Shop Exclusive Deals</h1>
+            <p>Access our most-loved beauty products at unbeatable prices.</p> <br/>
+            <a href="/products">
+                <button type="button">Shop Now</button>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

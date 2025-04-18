@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+</head>
+<body>
+    <h1>{{user.firstName}} {{user.lastName}}</h1>
+    <div id="profile-layout">
+    <div id="account-info-container">
+        <!-- Account Info -->
+        <div id="account-info-btn">
+            <div id="account-info">
+                <h2>Account Info:</h2>
+                <p>Name: {{user.firstName}} {{user.lastName}}</p>
+                <p>Email: {{user.email}}</p>
+                <br/>
+                <h2>Saved Address:</h2>
+                <p>{{user.address.street}}</p>
+                <p>{{user.address.city}}, {{user.address.state}} {{user.address.postalCode}}</p>
+                <br/>
+                <form action="/logout" method="POST">
+                    <button type="submit">Log Out</button>
+                </form>
+            </div>
+            <br/>
+        </div>
+    </div>
+
+    <div id="subscriptions-container">
+        <!-- Subscriptions preview -->
+        <div id="subscriptions-preview">
+        <h2>Your Active Subscriptions:</h2>
+        {{#if subscriptions.length}}
+            <ul class="subscriptions-list">
+                {{#each subscriptions}}
+                    <li class="subscription-card">
+                        <strong>{{this.productId.name}}</strong><br/>
+                        <span>Started on: {{formatDate this.startDate}}</span><br/>
+                        {{#if this.active}}
+                            <span>Status: Active</span><br/>
+                        {{else}}
+                            <span>Status: Cancelled</span>
+                        {{/if}}
+                        {{#if this.productId.variations.[0].images.[0]}}
+                            <img src="{{this.productId.variations.[0].images.[0]}}" alt="Product image" class="product-image">
+                        {{/if}}
+                        {{#if this.active}}
+                        <form action="/subscriptions/cancel/{{this._id}}" method="POST" style="margin-top: 10px;">
+                            <button type="submit" onclick="return confirm('Are you sure you want to cancel this subscription?');">
+                                Cancel Subscription
+                            </button>
+                        </form>
+                    {{/if}}
+                    </li>
+                {{/each}}
+            </ul>
+            <a href="/user-box">
+                        <button type="button">View Your Next Box</button> 
+                    </a>
+        {{else}}
+            <p>You do not have any active subscriptions.</p>
+        {{/if}}
+    </div>
+    </div>
+
+    <div id="quiz-container">
+        <!-- Quiz Results -->
+        <div id="quiz-results">
+        <h2>Your Quiz Results:</h2>
+        {{#if quizResults}}
+            {{#each quizResults.answers}}  
+                {{#if this.answer}} 
+                    <div class="quiz-answer">
+                        <strong>{{this.question}}</strong>
+                        {{#if (containsComma this.answer)}}
+                            {{#each (split this.answer)}}
+                                <div>{{this}}</div>
+                            {{/each}}
+                        {{else}}
+                            <div>{{this.answer}}</div>
+                        {{/if}}
+                    </div>
+                {{/if}}
+            {{/each}}
+            <div id="quiz-btns">
+                    <a href="/quiz">
+                        <button type="button">Take Quiz</button> 
+                    </a>
+                    <a href="/quiz/update">
+                        <button type="button">Update Quiz Answers</button>
+                    </a>
+                    <br> 
+                </div>
+        {{else}}
+            <p>You have not completed any quizzes yet.</p>
+            <a href="/quiz">
+                <button type="button">Take Quiz</button> 
+            </a>
+        {{/if}}
+    </div>
+    </div>
+
+    <div id="orders-container">
+        <!-- Orders Preview -->
+        <div id="orders-preview">
+        <h2>Your Recent Orders:</h2> <br/> 
+        {{#if orders.length}}
+            <div class="orders-container">
+                {{#each orders}}
+                    <div class="order-card">
+                        <p><strong>Order Number:</strong> {{this._id}} </p>
+                        <p><strong>Order Date:</strong> {{formatDate this.createdAt}} </p>
+                        <p><strong>Status:</strong> {{this.status}} </p>
+                        <p><strong>Order Total:</strong> ${{twoDec this.total}}</p> <br/>
+
+                        <h4>Items:</h4>
+                        <ul>
+                            {{#each this.items}}
+                                <li>
+                                {{this.name}} {{#if this.productId.subscription}} 
+                                                    {{else}}
+                                                        {{#if this.variationId}}
+                                                            {{#each this.productId.variations}}
+                                                                {{#if (stringEq this._id ../this.variationId)}}
+                                                                - {{this.shade}} -
+                                                                {{/if}}
+                                                            {{/each}}
+                                                        {{/if}}
+                                                    {{/if}} {{this.quantity}} x ${{twoDec this.price}} <br>
+                                </li>
+                            {{/each}}
+                        </ul>
+                        <div class="image-scroll-wrapper">
+                            {{#each this.items}}
+                                {{#if this.variationId}}
+                                    {{#each this.productId.variations}}
+                                        {{#if (stringEq this._id ../this.variationId)}}
+                                            <div class="image-container">
+                                                <img src="{{this.images.[0]}}" alt="{{this.name}}" class="product-image">
+                                            </div>
+                                        {{/if}}
+                                    {{/each}}
+                                {{/if}}
+                            {{/each}}
+                        </div>
+                    </div>
+                {{/each}}
+                <div id="order-btn">
+                    <a href="/orders">
+                            <button type="button">View All Orders</button> 
+                        </a>
+                </div>
+            </div>
+        {{else}}
+            <p>You have not placed any orders yet.</p>
+        {{/if}}
+    </div>
+    </div>
+</div>
+
+
+
+</body>
+</html>
+
+<style>
+    #profile-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto;
+        grid-template-areas:
+            "account subscriptions"
+            "quiz quiz"
+            "orders orders";
+        gap: 20px;
+        padding: 20px;
+    }
+
+    #account-info-container {
+        grid-area: account;
+    }
+
+    #subscriptions-container {
+        grid-area: subscriptions;
+    }
+
+    #quiz-container {
+        grid-area: quiz;
+    }
+
+    #orders-container {
+        grid-area: orders;
+    }
+
+    #account-info,
+    #subscriptions-preview,
+    #quiz-results,
+    #orders-preview {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    #account-info-btn {
+        flex: 1;
+        flex-direction: column;
+        display: flex;
+        max-width: 100%;
+    }
+
+
+#quiz-results {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.quiz-answer {
+    flex: 1 1 calc(50% - 20px);
+    background-color: #fff;
+    padding: 10px;
+    border-left: 5px solid #bc8b9f;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+#quiz-results h2 {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+#quiz-btns {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+#order-btn {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.orders-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.image-scroll-wrapper {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 10px;
+    padding: 10px 0;
+}
+
+.image-container {
+    flex: 0 0 auto; /* Prevent images from shrinking */
+}
+
+
+/* Style for the images */
+.product-image {
+    height: 80px;  /* Set the image size */
+    width: 80px;   /* Set the image size */
+    object-fit: cover;  /* Ensure the image fits well in the container */
+    border-radius: 8px;  
+}
+
+.preview-image::-webkit-scrollbar {
+    height: 8px;
+}
+
+.preview-image::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 4px;
+}
+
+.preview-image::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+.order-card {
+    flex: 1 0 30%; /* Adjust width of the order card */
+    max-width: 450px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.order-card .preview-image {
+    flex-direction: row !important; 
+}
+
+
+.subscriptions-list {
+    list-style: none;
+    padding: 0;
+}
+
+.subscription-card {
+    margin-bottom: 15px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.subscription-card img {
+    height: 80px;
+    width: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+
+</style>

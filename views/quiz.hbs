@@ -43,15 +43,15 @@
 
         .options {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Create a grid with flexible columns */
-            gap: 15px; /* Space between buttons */
-            justify-items: center; /* Center buttons horizontally */
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px; 
+            justify-items: center; 
         }
 
         .option-btn {
-            display: flex; /* Flex to center the content inside the button */
-            align-items: center; /* Vertically center the text */
-            justify-content: center; /* Horizontally center the text */
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
             padding: 15px;
             font-size: 1em;
             background-color: #f0f0f0;
@@ -61,10 +61,10 @@
             cursor: pointer;
             text-align: center;
             transition: background-color 0.3s ease, transform 0.3s ease;
-            width: 200px; /* Make button take up full width of grid cell */
-            height: 100px; /* Set a fixed height for all buttons */
-            min-height: 100px; /* Ensure buttons have a minimum height */
-            box-sizing: border-box; /* Include padding and border in the button's total size */
+            width: 200px; 
+            height: 100px; 
+            min-height: 100px; 
+            box-sizing: border-box; 
         }
 
         /* Option button hover and active states */
@@ -188,7 +188,7 @@
                 const isRadio = input.type === 'radio';
                 const isChecked = input.checked;
 
-                // For radio buttons: ensure only one is selected at a time
+                // For radio buttons , ensure only one is selected at a time
                 if (isRadio) {
                     // Unselect other radio buttons
                     const allRadioButtons = document.querySelectorAll(`input[name="${input.name}"]`);
@@ -207,7 +207,7 @@
                     }
                 }
 
-                // For checkboxes: toggle selection
+                // For checkboxes toggle selection
                 if (!isRadio) {
                     input.checked = !isChecked;
                     if (input.checked) {

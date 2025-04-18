@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
         const selectedCategories = Array.isArray(category) ? category : category ? [category] : [];
         const selectedBrands = Array.isArray(brand) ? brand : brand ? [brand] : [];
 
-        // Build filter object
+        // filter object
         const filter = {};
         if (selectedCategories.length) {
             filter.category = { $in: selectedCategories };
@@ -36,13 +36,13 @@ router.get('/', async (req, res) => {
             products.sort((a, b) => (a.subscription === b.subscription ? 0 : a.subscription ? -1 : 1));
         }
 
-        // popular 
+        // sort by popular
 
         // Get unique categories/brands for filters
         const categories = await Product.distinct('category');
         const brands = await Product.distinct('brand');
 
-        // Pass everything needed for UI rendering
+        // Products render
         res.render('products', {
             products,
             categories,
@@ -62,7 +62,7 @@ router.get('/', async (req, res) => {
 // Redirects user to previous page after loggin in
 router.get('/products-protected-route', (req, res) => {
     if (!req.session.user) {
-        const redirectUrl = req.headers.referer || '/products'; // Default to products page if no referrer
+        const redirectUrl = req.headers.referer || '/products'; // Default to products page
         console.log('User not logged in, setting redirect URL:', redirectUrl);
         req.session.redirectUrl = redirectUrl; // Store redirect URL in session
 

@@ -110,9 +110,9 @@ router.get('/', ensureLoggedIn, async (req, res) => {
 
         // Fetch the cart and populate the product details (including variations)
         const cart = await Cart.findOne({ userId })
-            .populate('items.productId')   // Populates the productId
-            .populate('items.variationId') // Populates the variationId
-            .populate('promoCode')         // Populates promoCode if needed
+            .populate('items.productId')   
+            .populate('items.variationId') 
+            .populate('promoCode')         
             .exec();
 
         if (cart) {
@@ -141,7 +141,7 @@ router.get('/', ensureLoggedIn, async (req, res) => {
 router.post('/add/:productId', ensureLoggedIn, async (req, res) => {
     const userId = req.session.user.id;
     const { productId } = req.params;
-    const { quantity, variationId } = req.body;  // variationId
+    const { quantity, variationId } = req.body;  
 
     try {
         // Find the product by ID
@@ -170,7 +170,7 @@ router.post('/add/:productId', ensureLoggedIn, async (req, res) => {
                 cart.items.push({
                     productId: product._id,
                     quantity: parseInt(quantity, 10) || 1,
-                    variationId: variation._id,  // variation id ----
+                    variationId: variation._id,  
                     price: variation.price,
                 });
             }
@@ -222,7 +222,7 @@ router.post('/add/:productId', ensureLoggedIn, async (req, res) => {
             cart = new Cart({ userId, items: [] });
         }
 
-        // Handle a simple product (no variations or subscription)
+        // Handle a simple produc
         const existingItem = cart.items.find(item => item.productId.toString() === product._id.toString());
         if (existingItem) {
             existingItem.quantity += parseInt(quantity, 10) || 1;
@@ -404,12 +404,12 @@ router.post('/apply-promo', async (req, res) => {
         await promo.save();
 
         cart = await Cart.findOne({ userId })
-            .populate('items.productId')   // Populates the productId
-            .populate('items.variationId') // Populates the variationId
-            .populate('promoCode')         // Populates promoCode if needed
+            .populate('items.productId')   
+            .populate('items.variationId') 
+            .populate('promoCode')         
             .exec();
 
-        // Now, calculate the total with the promo code applied
+        // calculate the total with the promo code applied
         const total = calculateTotal(cart);
         res.json({ success: true, message: 'Promo code applied successfully!', total: total.total, promoCode: {
             code: promo.code,
@@ -423,6 +423,7 @@ router.post('/apply-promo', async (req, res) => {
     }
 });
 
+// route to remove a promo code
 router.post('/remove-promo', async (req, res) => {
     const userId = req.session.user.id;
 

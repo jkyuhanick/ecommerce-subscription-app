@@ -9,23 +9,23 @@
         /* Grid container for the cart layout */
         .cart-item {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr; /* Four equal columns */
-            gap: 10px; /* Space between the columns */
-            margin-bottom: 20px; /* Space between cart items */
+            grid-template-columns: 1fr 1fr 1fr 1fr; 
+            gap: 10px; 
+            margin-bottom: 20px;
         }
 
         /* First column: Product details, remove button, and quantity controls */
         .cart-item-details {
             display: flex;
-            flex-direction: column; /* Stack the content vertically */
-            gap: 5px; /* Space between each element */
+            flex-direction: column;
+            gap: 5px; 
         }
 
         /* Second column: Product image */
         .preview-image {
             display: flex;
-            justify-content: right; /* Center the image horizontally */
-            align-items: center; /* Center the image vertically */
+            justify-content: right; 
+            align-items: center; 
         }
 
         .preview-image img {
@@ -82,9 +82,9 @@
         /* Cart total section positioned below cart items */
         .cart-total {
             display: flex;
-            flex-direction: column; /* Stack total and button vertically */
-            align-items: flex-end; /* Align items to the right */
-            margin-top: 20px; /* Space between cart items and total */
+            flex-direction: column; 
+            align-items: flex-end; 
+            margin-top: 20px;
             padding: 10px;
             gap: 10px;
         }
@@ -96,7 +96,7 @@
 
         .checkout-button {
             margin-top: 10px;
-            padding: 10px 20px; /* Button padding */
+            padding: 10px 20px;
             cursor: pointer;
             font-size: 20px;
         }
@@ -237,7 +237,7 @@
 $(document).ready(function () {
     // Handle promo code form submission with AJAX
     $('#promo-code-form').submit(function (event) {
-        event.preventDefault(); // Prevent form from reloading the page
+        event.preventDefault(); 
 
         const promoCode = $('#promo-code').val(); // Get the promo code input value
 
@@ -246,9 +246,9 @@ $(document).ready(function () {
             url: '/cart/apply-promo', 
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({ promoCode }), // Send the promo code to the server
+            data: JSON.stringify({ promoCode }),
             success: function (data) {
-                console.log(data);  // Debugging the server response to see what is being sent back
+                console.log(data);  // Debugging
 
                 if (data.success) {
                     // Update the cart and total dynamically based on server response
@@ -289,7 +289,7 @@ $(document).ready(function () {
             method: 'POST',
             contentType: 'application/json',
             success: function (data) {
-                console.log(data);  // Debugging the server response to see what is being sent back
+                console.log(data);  // Debugging
 
                 if (data.success) {
                     // Update the cart and total dynamically based on server response
@@ -320,7 +320,7 @@ $(document).ready(function () {
             contentType: 'application/json',
             data: JSON.stringify({ change }),
             success: function (data) {
-                console.log(data); // Debugging the server response for cart update
+                console.log(data); // Debugging 
                 $(`.quantity-display[data-product-id="${productId}"][data-variation-id="${variationId}"]`).text(data.newQuantity);
                 $('#cart-total').text(data.newTotal.toFixed(2));
                 updateCartCount();
@@ -357,7 +357,7 @@ $(document).ready(function () {
         });
     }
 
-    updateCartCount(); // Run on page load
+    updateCartCount(); 
 });
 
     </script>

@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
 
         res.render('quiz', {
             currentQuestion: questions[questionIndex],
-            currentQuestionIndex: questionIndex + 1, // 1-based index for display
+            currentQuestionIndex: questionIndex + 1, 
             totalQuestions: questions.length,
             currentAnswer: storedAnswer,
             quizAnswers: req.session.quizAnswers,

@@ -64,7 +64,7 @@
         // Fetch cart count
         function updateCartCount() {
             $.ajax({
-                url: '/cart/count', // Corrected API route
+                url: '/cart/count', 
                 method: 'GET',
                 success: function (data) {
                     console.log("Cart count from server:", data.cartCount); // Debugging log

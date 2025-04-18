@@ -190,7 +190,7 @@ router.post('/submit', ensureLoggedIn, async (req, res) => {
                 variationId: item.variationId,
                 name: product.name,
                 quantity: item.quantity,
-                price: variation.price, // Access price of the selected variation
+                price: variation.price, 
             };
         }));
 
@@ -199,8 +199,8 @@ router.post('/submit', ensureLoggedIn, async (req, res) => {
         // Create the order with the calculated total
         const order = new Order({
             userId,
-            items, // Items array with price included
-            total, // Total price of the order
+            items, 
+            total, 
             shippingAddress: {
                 fullName: fullName,
                 address: street,  

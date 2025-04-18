@@ -21,24 +21,24 @@
         /* Product detail container */
         .product-detail {
             display: flex;
-            gap: 20px; /* Space between the image and text */
-            align-items: flex-start; /* Align image and text at the top */
+            gap: 20px; 
+            align-items: flex-start; 
             padding: 20px;
         }
 
         /* Image container */
         .image-gallery {
-            flex: 1; /* Take up 1 portion of the space */
+            flex: 1; 
             text-align: left;
         }
 
         /* Main image styling */
         .product-image {
-            width: 100%;               /* Make image fill the container */
-            height: 300px;             /* Fixed height for consistent image size */
-            object-fit: cover;         /* Ensures the image covers the area while preserving aspect ratio */
-            border-radius: 10px;       /* Rounded corners */
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow for effect */
+            width: 100%;              
+            height: 300px;           
+            object-fit: cover;    
+            border-radius: 10px;  
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         /* Thumbnail container */
@@ -51,9 +51,9 @@
 
         /* Thumbnail image styling */
         .thumbnail {
-            width: 100px;               /* Fixed width for thumbnails */
-            height: 100px;              /* Fixed height for thumbnails */
-            object-fit: cover;         /* Ensures thumbnails are cropped and fit in the box */
+            width: 100px;            
+            height: 100px;     
+            object-fit: cover;     
             cursor: pointer;
             border-radius: 5px;
             transition: transform 0.2s;
@@ -123,7 +123,7 @@
     .out-of-stock {
         background-color: #ccc;
         color: #777;
-        cursor: not-allowed; /* Disable button interaction */
+        cursor: not-allowed; 
     }
 
     /* No hover effect for out-of-stock buttons */
@@ -270,93 +270,91 @@
             document.getElementById('mainImage').src = imageSrc;
         }
 
-        let selectedProductId = productData._id; // Store main product ID
-// Get the `variationId` from the URL query parameters
-const urlParams = new URLSearchParams(window.location.search);
-const variationIdFromURL = urlParams.get('variationId'); // Get the variationId
+        let selectedProductId = productData._id; 
 
-let selectedVariationId = variationIdFromURL || productData.variations[0]._id; // If no variationId, fall back to the first variation
+        // Get the `variationId` from the URL query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const variationIdFromURL = urlParams.get('variationId'); // Get the variationId
 
-// Function to initialize the page and select the correct variation
-function initializeProductPage() {
-    if (variationIdFromURL) {
-        // If a variationId exists in the URL, find the corresponding variation and call switchVariation
-        const variationIndex = productData.variations.findIndex(variation => variation._id === variationIdFromURL);
-        if (variationIndex !== -1) {
-            switchVariation(variationIndex); // Call switchVariation with the correct index
-        }
-    }
-}
+        let selectedVariationId = variationIdFromURL || productData.variations[0]._id; // If no variationId, first variation
 
-// Call the initialization function when the page loads
-initializeProductPage();
-
-
-function switchVariation(index) {
-    let variation = productData.variations[index];
-    selectedVariationId = variation._id; // Update selected variation
-
-    // Update Main Image
-    document.getElementById('mainImage').src = variation.images[0];
-
-    // Update Thumbnails
-    let thumbnailContainer = document.querySelector('.thumbnail-container');
-    thumbnailContainer.innerHTML = '';
-    variation.images.forEach(image => {
-        let img = document.createElement('img');
-        img.src = image;
-        img.classList.add('thumbnail');
-        img.alt = 'Thumbnail';
-        img.onclick = function () { updateMainImage(image); };
-        thumbnailContainer.appendChild(img);
-    });
-
-    // Update Product Info
-    document.getElementById('price').innerText = `$${variation.price}`;
-
-    // Ensure Add to Cart Button still calls addToCart with the correct product ID
-    let cartButton = document.querySelector("button[onclick^='addToCart']");
-    if (cartButton) {
-        cartButton.setAttribute("onclick", `addToCart('${productData._id}', event)`);
-    }
-}
-
-async function addToCart(productId, event) {
-    if (event) event.preventDefault();
-
-    try {
-        const res = await fetch('/products/products-protected-route', { method: 'GET' });
-
-        if (res.redirected) {
-            console.log("User not authenticated, redirecting...");
-            window.location.href = `/login?redirect=${encodeURIComponent('/products/' + productId)}`;
-            return;
+        // Function to initialize the page and select the correct variation
+        function initializeProductPage() {
+            if (variationIdFromURL) {
+                // If a variationId exists in the URL, find the corresponding variation and call switchVariation
+                const variationIndex = productData.variations.findIndex(variation => variation._id === variationIdFromURL);
+                if (variationIndex !== -1) {
+                    switchVariation(variationIndex); // Call switchVariation with the correct index
+                }
+            }
         }
 
-        // Send variation ID in the request body, but keep the product ID in the URL
-        const addToCartResponse = await fetch(`/cart/add/${productId}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ quantity: 1, variationId: selectedVariationId }) // Include variationId
-        });
+        // Call the initialization function when the page loads
+        initializeProductPage();
 
-        if (addToCartResponse.ok) {
-            console.log("Item added to cart!");
-            window.location.href = `/products/${productId}`;
-        } else {
-            alert('Failed to add to cart. Please try again.');
+
+        function switchVariation(index) {
+            let variation = productData.variations[index];
+            selectedVariationId = variation._id; // Update selected variation
+
+            // Update Main Image
+            document.getElementById('mainImage').src = variation.images[0];
+
+            // Update Thumbnails
+            let thumbnailContainer = document.querySelector('.thumbnail-container');
+            thumbnailContainer.innerHTML = '';
+            variation.images.forEach(image => {
+                let img = document.createElement('img');
+                img.src = image;
+                img.classList.add('thumbnail');
+                img.alt = 'Thumbnail';
+                img.onclick = function () { updateMainImage(image); };
+                thumbnailContainer.appendChild(img);
+            });
+
+            // Update Product Info
+            document.getElementById('price').innerText = `$${variation.price}`;
+
+            // Ensure Add to Cart Button still calls addToCart with the correct product ID
+            let cartButton = document.querySelector("button[onclick^='addToCart']");
+            if (cartButton) {
+                cartButton.setAttribute("onclick", `addToCart('${productData._id}', event)`);
+            }
         }
-    } catch (error) {
-        console.error('Error adding to cart:', error);
-        alert('Something went wrong.');
-    }
-}
 
+        async function addToCart(productId, event) {
+            if (event) event.preventDefault();
 
+            try {
+                const res = await fetch('/products/products-protected-route', { method: 'GET' });
 
+                if (res.redirected) {
+                    console.log("User not authenticated, redirecting...");
+                    window.location.href = `/login?redirect=${encodeURIComponent('/products/' + productId)}`;
+                    return;
+                }
 
+                // Send variation ID in the request body, but keep the product ID in the URL
+                const addToCartResponse = await fetch(`/cart/add/${productId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ quantity: 1, variationId: selectedVariationId }) // Include variationId
+                });
+
+                if (addToCartResponse.ok) {
+                    console.log("Item added to cart!");
+                    window.location.href = `/products/${productId}`;
+                } else {
+                    alert('Failed to add to cart. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+                alert('Something went wrong.');
+            }
+        }
+        
         async function handleSubscription(planId) {
-            console.log("Attempting to add subscription with ID:", planId); // Debugging log
+            console.log("Attempting to add subscription with ID:", planId); // Debugging
 
             try {
                 const res = await fetch('/protected-route', { method: 'GET' });

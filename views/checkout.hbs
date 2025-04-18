@@ -75,12 +75,12 @@
     // Custom styles for the card element
     var cardStyle = {
         base: {
-            color: '#32325d',  // Text color
+            color: '#32325d',  
             fontFamily: 'Arial, sans-serif',
             fontSmoothing: 'antialiased',
             fontSize: '16px',
             '::placeholder': {
-                color: '#aab7c4',  // Placeholder color
+                color: '#aab7c4', 
             },
         },
         invalid: {
@@ -108,14 +108,14 @@
             paymentMethodIdInput.setAttribute('value', token.id);
             form.appendChild(paymentMethodIdInput);
 
-            form.submit();  // Now submit the form
+            form.submit();  // submit the form
         }
     });
 
-    // The additional jQuery code you have for AJAX form handling (if needed)
+    // AJAX form handling 
     $(document).ready(function () {
         $('#checkout-form').submit(function (event) {
-            event.preventDefault(); // Prevent default form submission
+            event.preventDefault(); 
 
             $.ajax({
                 url: '/login',
@@ -152,7 +152,7 @@
     }
 
     #card-errors {
-        color: #fa755a;  /* Error message color */
+        color: #fa755a; 
         font-size: 14px;
     }
 

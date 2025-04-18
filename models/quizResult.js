@@ -4,7 +4,7 @@ const quizResultSchema = new mongoose.Schema({
     userId: {
         type: String,
         required: true,
-        unique: true, // Ensure one entry per user
+        unique: true,
     },
     answers: [
         {

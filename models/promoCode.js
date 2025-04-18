@@ -20,7 +20,7 @@ const promoCodeSchema = new mongoose.Schema({
         required: true
     },
     maxUses: {
-        type: Number, // Global maxUses across all users
+        type: Number, // max uses for code
         required: true
     },
     usersUsed: [

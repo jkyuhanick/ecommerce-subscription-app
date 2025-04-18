@@ -77,7 +77,7 @@ app.engine('hbs', exphbs.engine({
         },
         twoDec: (num) => {
             if (typeof num === 'number' && !isNaN(num)) {
-                return num.toFixed(2); // Format number to 2 decimal places
+                return num.toFixed(2); 
               } else {
                 return '0.00'; // If invalid, return 0.00
               }
@@ -275,7 +275,7 @@ app.post('/signup', async (req, res) => {
 });
 
 
-// User Login Route (with session and redirect functionality)
+// User Login Route (with session and redirect )
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
 

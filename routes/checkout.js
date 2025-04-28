@@ -105,7 +105,7 @@ function calculateTotal(cart) {
 
     // Ensure the total is always a number (default to 0 if it's not a valid number)
     total = isNaN(total) || total === null ? 0 : total;
-    total = parseFloat(total).toFixed(2);
+    total = parseFloat(total);
 
     return { total, message };
 }
@@ -133,10 +133,17 @@ router.get('/', ensureLoggedIn, async (req, res) => {
 
 router.post('/submit', ensureLoggedIn, async (req, res) => {
     try {
-        let { fullName, address, total, paymentMethodId } = req.body;  // paymentMethodId is passed from frontend
+        let { fullName, address, paymentMethodId } = req.body;  // paymentMethodId is passed from frontend
         const userId = req.session.user.id;
 
         const { street, city, state, postalCode, country } = address;
+
+        // Save address to user profile
+        const user = await User.findById(userId);
+        if (user) {
+            user.address = { street, city, state, postalCode, country };
+            await user.save();
+        }
 
         // Fetch user's cart and apply promo code discount
         const cart = await Cart.findOne({ userId }).populate('items.productId').populate('promoCode');
@@ -148,13 +155,11 @@ router.post('/submit', ensureLoggedIn, async (req, res) => {
         // Calculate total from the cart, including promo code if available
         let { total: calculatedTotal, message } = calculateTotal(cart);
 
-        if (parseFloat(total).toFixed(2) !== calculatedTotal) {
-            return res.status(400).send('Total mismatch, please try again.');
-        }
+        const amountInCents = Math.round(calculatedTotal * 100);
 
         // Charge the payment
         const paymentIntent = await stripe.paymentIntents.create({
-            amount: calculatedTotal * 100,  // Amount in cents
+            amount: amountInCents,
             currency: 'usd',
             payment_method_data: {
                 type: 'card',
@@ -194,7 +199,7 @@ router.post('/submit', ensureLoggedIn, async (req, res) => {
             };
         }));
 
-        total = parseFloat(parseFloat(total).toFixed(2));
+        total = amountInCents/100;
         
         // Create the order with the calculated total
         const order = new Order({

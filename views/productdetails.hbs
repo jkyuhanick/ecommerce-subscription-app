@@ -190,13 +190,13 @@
                 <br/>
                 {{#if (eq product.category "Subscription")}}
                     {{#if (outOfStock product)}}
-                        <button id="subscribeButtonNo" class="button out-of-stock" onclick="">Subscribe</button>
+                        <button id="subscribeButtonNo" class="button out-of-stock" onclick="" disabled >Subscribe</button>
                     {{else}}
                         <button id="subscribeButton" onclick="handleSubscription('{{product._id}}')">Subscribe</button>
                     {{/if}}
                 {{else}}
                     {{#if (outOfStock product)}}
-                        <button id="cartButtonNo" onclick="">Add to Cart</button>
+                        <button id="cartButtonNo" onclick="" disabled>Add to Cart</button>
                     {{else}}
                         <button onclick="addToCart('{{product._id}}', event)">Add to Cart</button>
                     {{/if}}
@@ -243,7 +243,7 @@
                         {{/if}}
                     {{else}}
                         {{#if (outOfStock product)}}
-                            <button id="cartButtonNo" onclick="">Add to Cart</button>
+                            <button id="cartButtonNo" onclick="" disabled>Add to Cart</button>
                         {{else}}
                             <button onclick="addToCart('{{product._id}}', event)">Add to Cart</button>
                         {{/if}}

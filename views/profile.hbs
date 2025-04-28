@@ -17,8 +17,12 @@
                 <p>Email: {{user.email}}</p>
                 <br/>
                 <h2>Saved Address:</h2>
-                <p>{{user.address.street}}</p>
-                <p>{{user.address.city}}, {{user.address.state}} {{user.address.postalCode}}</p>
+                {{#if user.address.street}}
+                    <p>{{user.address.street}}</p>
+                    <p>{{user.address.city}}, {{user.address.state}} {{user.address.postalCode}}</p>
+                {{else}}
+                    <p>You do not have a saved address.</p>
+                {{/if}}
                 <br/>
                 <form action="/logout" method="POST">
                     <button type="submit">Log Out</button>

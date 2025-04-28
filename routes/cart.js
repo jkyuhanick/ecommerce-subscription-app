@@ -95,7 +95,8 @@ function calculateTotal(cart) {
     }
 
     // Ensure the total is always a number (default to 0 if it's not a valid number)
-    total = isNaN(total) ? 0 : total;
+    total = isNaN(total) || total === null ? 0 : total;
+    total = parseFloat(total);
 
     return { total, message };
 }
@@ -117,10 +118,10 @@ router.get('/', ensureLoggedIn, async (req, res) => {
 
         if (cart) {
             // Use the calculateTotal function to get the total and message
-            const { total, message } = calculateTotal(cart);
+            let { total, message } = calculateTotal(cart);
 
             // Ensure the total is a valid number before rendering
-            const totalFormatted = !isNaN(total) ? total.toFixed(2) : '0.00';
+            const totalFormatted = !isNaN(total) ? total = parseFloat(total).toFixed(2) : '0.00';
 
             // Render the cart with the updated total and message
             res.render('cart', { cart, total: totalFormatted, message });

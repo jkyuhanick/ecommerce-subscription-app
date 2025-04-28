@@ -223,6 +223,7 @@ li {
 @media (max-width: 768px) {
     body {
         padding: 10px;
+        margin: 0px;
     }
     
     .container {

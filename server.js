@@ -17,7 +17,7 @@ const quizRoutes = require('./routes/quiz');
 const checkoutRoutes = require('./routes/checkout');
 const QuizResult = require('./models/quizResult');
 const productsRouter = require('./routes/products');
-const userBoxRoutes = require('./routes/userBox');
+const userBoxRoutes = require('./routes/userbox');
 
 const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access');
 const Handlebars = require('handlebars');

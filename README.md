@@ -2,7 +2,7 @@
 
 This is a full-featured subscription-based e-commerce web app inspired by services like Birchbox and Ipsy. Users take a quiz to personalize their subscription box, browse products, and complete a full checkout process.
 
-## Features
+# Features
 
 - User authentication and sessions
 - Product filtering, sorting, and quiz-based recommendations
@@ -10,7 +10,7 @@ This is a full-featured subscription-based e-commerce web app inspired by servic
 - Stripe payment integration
 - Fully responsive design with jQuery and AJAX interactivity
 
-## Technologies
+# Technologies
 
 - Node.js, Express.js, MongoDB, Handlebars, HTML
 - jQuery, CSS, Font Awesome

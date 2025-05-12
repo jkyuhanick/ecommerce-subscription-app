@@ -5,9 +5,16 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+
 /* Body */
 body {
-    font-family: Optima, sans-serif;
+    font-family: "Optima", "Segoe UI", "Candara", "Noto Sans", "Trebuchet MS", sans-serif;
     background-color: #f8f9fa;
     color: #333;
     line-height: 1.6;    
@@ -175,7 +182,7 @@ nav {
 
 /* Buttons */
 button {
-    font-family: Optima, sans-serif;
+    font-family: "Optima", "Segoe UI", "Candara", "Noto Sans", "Trebuchet MS", sans-serif;
     padding: 10px 15px;
     border: 1px solid black;
     border-color:#000000;

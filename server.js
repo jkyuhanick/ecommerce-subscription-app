@@ -154,7 +154,7 @@ app.post("/email-signup", async (req, res) => {
       settings: {
         subject_line: "Welcome to Beauty Box!",
         from_name: "Beauty Box",
-        reply_to: "you@example.com"
+        reply_to: "juliayuhanick@242426902.mailchimpapp.com"
       }
     })
   });

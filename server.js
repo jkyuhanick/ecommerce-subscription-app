@@ -119,43 +119,62 @@ function ensureLoggedIn(req, res, next) {
     res.redirect('/login');
 }
 
-app.post('/email-signup', async(req,res) => {
-    const { email } = req.body;
+app.post("/email-signup", async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: "Email is required" });
 
-     if (!email) return res.status(400).json({ error: "Email is required" });
+  const API_KEY = process.env.MAILCHIMP_API_KEY;
+  const AUDIENCE_ID = process.env.MAILCHIMP_AUDIENCE_ID;
+  const DC = process.env.MAILCHIMP_DC;
 
-    const API_KEY = process.env.MAILCHIMP_API_KEY;
-    const AUDIENCE_ID = process.env.MAILCHIMP_AUDIENCE_ID;
-    const DC = process.env.MAILCHIMP_DC;
+  // Add subscriber
+  const url = `https://${DC}.api.mailchimp.com/3.0/lists/${AUDIENCE_ID}/members`;
+  const subscriberData = { email_address: email, status: "subscribed" };
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Authorization": `apikey ${API_KEY}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(subscriberData)
+  });
 
-     const url = `https://${DC}.api.mailchimp.com/3.0/lists/${AUDIENCE_ID}/members`;
-
-  const data = {
-    email_address: email,
-    status: "subscribed"
-  };
-
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Authorization": `apikey ${API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    });
-
-    if (!response.ok) {
-      const errData = await response.json();
-      return res.status(response.status).json(errData);
-    }
-
-    res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+  if (!response.ok) {
+    const errData = await response.json();
+    return res.status(response.status).json(errData);
   }
-})
+
+  // Create and send a small welcome campaign
+  const campaignRes = await fetch(`https://${DC}.api.mailchimp.com/3.0/campaigns`, {
+    method: "POST",
+    headers: { "Authorization": `apikey ${API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      type: "regular",
+      recipients: { list_id: AUDIENCE_ID },
+      settings: {
+        subject_line: "Welcome to Beauty Box!",
+        from_name: "Beauty Box",
+        reply_to: "you@example.com"
+      }
+    })
+  });
+  const campaignData = await campaignRes.json();
+
+  // Set campaign content
+  await fetch(`https://${DC}.api.mailchimp.com/3.0/campaigns/${campaignData.id}/content`, {
+    method: "PUT",
+    headers: { "Authorization": `apikey ${API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ html: `<h1>Welcome!</h1><p>Thanks for joining our Beauty Box community!</p>` })
+  });
+
+  // Send campaign
+  await fetch(`https://${DC}.api.mailchimp.com/3.0/campaigns/${campaignData.id}/actions/send`, {
+    method: "POST",
+    headers: { "Authorization": `apikey ${API_KEY}` }
+  });
+
+  res.json({ success: true });
+});
 
 
 // Serve the homepage

@@ -119,6 +119,44 @@ function ensureLoggedIn(req, res, next) {
     res.redirect('/login');
 }
 
+app.post('/email-signup', async(req,res) => {
+    const { email } = req.body;
+
+     if (!email) return res.status(400).json({ error: "Email is required" });
+
+    const API_KEY = process.env.MAILCHIMP_API_KEY;
+    const AUDIENCE_ID = process.env.MAILCHIMP_AUDIENCE_ID;
+    const DC = process.env.MAILCHIMP_DC;
+
+     const url = `https://${DC}.api.mailchimp.com/3.0/lists/${AUDIENCE_ID}/members`;
+
+  const data = {
+    email_address: email,
+    status: "subscribed"
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Authorization": `apikey ${API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      const errData = await response.json();
+      return res.status(response.status).json(errData);
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+})
+
 
 // Serve the homepage
 app.get('/', (req, res) => {

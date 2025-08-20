@@ -30,8 +30,8 @@
         <div class="footer-column">
             <h3>Stay in Touch</h3>
             <p>For deals, news, and more!</p>
-            <form id="email-signup" class="email-signup" onsubmit="clearInput(); return false;">
-                <input type="email" id="email-input" placeholder="Enter your email" required>  
+            <form id="email-signup" class="email-signup">
+                <input type="email" id="email-input" placeholder="Enter your email" required>
                 <button type="submit">Submit</button>
             </form>
         </div>
@@ -116,7 +116,19 @@
 
 
 <script>
-    function clearInput() {
-        document.getElementById("email-input").value = ""; 
-    }
+    const form = document.getElementById("email-signup");
+    form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email-input").value;
+
+    const res = await fetch("/email-signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+    });
+
+    const data = await res.json();
+    if (data.success) alert("Subscribed!");
+    else alert("Error: " + (data.detail || data.error));
+    });
 </script>

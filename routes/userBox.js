@@ -152,6 +152,8 @@ router.get('/', ensureLoggedIn, async (req, res) => {
                 month,
                 year,
             });
+
+            console.log(userBox);
             
             // Save the new user box
             await userBox.save();
